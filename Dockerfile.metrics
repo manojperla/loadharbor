@@ -1,0 +1,5 @@
+FROM python:3.12-slim
+WORKDIR /app
+COPY loadharbor ./loadharbor
+USER 65534:65534
+CMD ["python", "-m", "loadharbor.metrics", "--root", "/runs", "--host", "0.0.0.0"]

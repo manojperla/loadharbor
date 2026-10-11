@@ -1,0 +1,26 @@
+{
+  "smoke": {
+    "duration": 10,
+    "rate": 1,
+    "p95Ms": 1000,
+    "maxErrorPercent": 1
+  },
+  "baseline": {
+    "duration": 30,
+    "rate": 3,
+    "p95Ms": 750,
+    "maxErrorPercent": 1
+  },
+  "load": {
+    "duration": 60,
+    "rate": 10,
+    "p95Ms": 750,
+    "maxErrorPercent": 1
+  },
+  "stress": {
+    "duration": 60,
+    "rate": 20,
+    "p95Ms": 1000,
+    "maxErrorPercent": 1
+  }
+}

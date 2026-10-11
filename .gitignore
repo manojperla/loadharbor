@@ -1,0 +1,7 @@
+target/
+.run/
+__pycache__/
+*.pyc
+.env
+.venv/
+.idea/

@@ -1,0 +1,33 @@
+services:
+  metrics:
+    build:
+      context: .
+      dockerfile: Dockerfile.metrics
+    volumes:
+      - ./.run/runs:/runs:ro
+    ports:
+      - "127.0.0.1:9400:9400"
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "127.0.0.1:9090:9090"
+    depends_on: [metrics]
+  grafana:
+    image: grafana/grafana:12.3.4
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-loadharbor-local-demo}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on: [prometheus]
+volumes:
+  prometheus-data:
+  grafana-data:

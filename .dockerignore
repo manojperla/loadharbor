@@ -1,0 +1,5 @@
+.git
+.run
+target
+__pycache__
+.env
