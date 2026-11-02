@@ -1,0 +1,61 @@
+name: Weekly quick check
+on:
+  schedule:
+    - cron: '37 3 * * 2'
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/maintenance.yml'
+      - 'pom.xml'
+permissions:
+  contents: read
+jobs:
+  quick-start:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run documented checks with one retry
+        shell: bash
+        run: |
+          check() (
+            set -e
+            python -m unittest discover -s tests -v
+            python run.py --profile smoke
+          )
+          set +e
+          check
+          status=$?
+          set -e
+          if [ "$status" -ne 0 ]; then
+            echo "::warning::Retrying the quick check once"
+            check
+          fi
+  report-failure:
+    if: failure() && needs.quick-start.result == 'failure' && github.event_name == 'schedule'
+    needs: quick-start
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      issues: write
+    steps:
+      - name: Create or update the maintenance issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          title='Weekly loadharbor quick-start failure'
+          body="The scheduled clean-install check failed. [Inspect the failing step and commands]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)."
+          issue=$(gh issue list --state open --search "in:title \"$title\"" --json number,title,author --jq '.[] | select(.title == "Weekly loadharbor quick-start failure" and (.author.login == "app/github-actions" or .author.login == "github-actions[bot]")) | .number' | head -1)
+          if [ -n "$issue" ]; then
+            gh issue edit "$issue" --body "$body"
+          else
+            gh issue create --title "$title" --body "$body"
+          fi
