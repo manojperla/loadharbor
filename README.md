@@ -1,5 +1,9 @@
 # LoadHarbor
 
+[![Weekly quick check](https://github.com/manojperla/loadharbor/actions/workflows/maintenance.yml/badge.svg?branch=main)](https://github.com/manojperla/loadharbor/actions/workflows/maintenance.yml)
+
+Every Tuesday, GitHub Actions uses a fresh Linux runner to run the Python exporter tests and the local Gatling smoke profile.
+
 **Gatling Java simulations · Python orchestration · Prometheus · Grafana**
 
 A runnable performance-testing reference project by Manoj Perla. Java defines load
