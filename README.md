@@ -113,3 +113,16 @@ References: [Gatling Java SDK](https://docs.gatling.io/tutorials/test-as-code/ja
 [Grafana provisioning](https://grafana.com/docs/grafana/latest/administration/provisioning/).
 Project source is MIT licensed. Gatling and its Highcharts reports retain their
 respective upstream licenses; this repository does not redistribute their binaries.
+
+## Compare runs consistently
+
+Keep the profile, duration, arrival rate, target environment, and load-generator
+resources fixed when comparing two runs. Change one workload parameter at a time;
+a lower P95 under a lighter workload is not evidence of an improvement.
+
+Check `.run/runs/<run>/summary.json` for the effective configuration,
+`telemetry_complete`, and `exit_code` before interpreting charts. Incomplete
+telemetry makes a result unsuitable as a baseline, even if a dashboard has data.
+Use Gatling's report for pass/fail and compare Grafana estimates as trends.
+
+See [failure diagnosis](docs/troubleshooting.md) for runner and monitoring checks.
